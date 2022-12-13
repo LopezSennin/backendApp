@@ -7,6 +7,8 @@ app = Flask(__name__)
 app.config['MONGO_URI'] = 'mongodb://localhost/dbApp'
 mongo = PyMongo(app)
 
+#  peluqueria
+
 
 @app.route('/peluqueria', methods=['POST'])
 def create_peluqueria():
@@ -53,7 +55,35 @@ def update_peluqueria(nit):
     cedula_owner = request.json['cedula_owner']
 
 
+#  atencion
 
+
+@app.route('/atencion', methods=['POST'])
+def create_atencion():
+    cedula_cliente = request.json['cedula_cliente']
+    cedula_estilista = request.json['cedula_estilista']
+    fecha = request.json['fecha']
+    servicios = request.json['servicios']
+    if cedula_cliente and cedula_estilista and fecha and servicios:
+        value = mongo.db.atencion.insert(
+            {
+                'cedula_cliente': cedula_cliente,
+                'cedula_estilista': cedula_estilista,
+                'fecha': fecha,
+                'servicios': servicios
+            }
+        )
+        response = jsonify({
+            'id': str(value),
+            'cedula_cliente': cedula_cliente,
+            'cedula_estilista': cedula_estilista,
+            'fecha': fecha,
+            'servicios': servicios
+        })
+        response.status_code = 201
+        return response
+    else:
+        return not_found()
 @app.errorhandler(404)
 def not_found(error=None):
     response = jsonify({
